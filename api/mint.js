@@ -1,3 +1,5 @@
+import { mintRareNFT } from "../scripts/mintNFT.js"; // adjust path if needed
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -11,10 +13,17 @@ export default async function handler(req, res) {
 
   console.log("🎃 Mint request received for wallet:", wallet);
 
-  // Fake mint success
-  return res.status(200).json({
-    success: true,
-    message: "Rare Pumpkin NFT minted (fake)",
-    tokenId: Math.floor(Math.random() * 1_000_000)
-  });
+  try {
+    // Call the real mint function
+    const txHash = await mintRareNFT(wallet);
+
+    return res.status(200).json({
+      success: true,
+      message: "Rare Pumpkin NFT minted!",
+      txHash
+    });
+  } catch (err) {
+    console.error("Error in API mint:", err);
+    return res.status(500).json({ error: "Minting failed", details: err.message });
+  }
 }
