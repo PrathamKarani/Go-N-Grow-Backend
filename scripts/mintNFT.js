@@ -1,30 +1,30 @@
-require("dotenv").config();
-const { ethers } = require("ethers");
-const fs = require("fs");
+import { ethers } from "ethers";
+import fs from "fs";
+import path from "path";
 
-// Load contract ABI (from Hardhat artifacts)
-const abi = JSON.parse(fs.readFileSync("./abis/RarePumpkin.json")).abi;
+const __dirname = path.resolve();
 
-// Connect to network
+// Load ABI safely
+const abi = JSON.parse(
+  fs.readFileSync(path.join(__dirname, "abis", "RarePumpkin.json"))
+).abi;
+
 const provider = new ethers.JsonRpcProvider(process.env.AMOY_RPC_URL);
-
-// Create wallet signer
 const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
-// Connect to contract
-const contract = new ethers.Contract(process.env.CONTRACT_ADDRESS, abi, wallet);
+const contract = new ethers.Contract(
+  process.env.CONTRACT_ADDRESS,
+  abi,
+  wallet
+);
 
-async function mintRareNFT(toAddress) {
-    try {
-        const tx = await contract.mintRarePumpkin(toAddress);
-        console.log("Transaction sent! Hash:", tx.hash);
-
-        const receipt = await tx.wait();
-        console.log("Transaction confirmed! Block number:", receipt.blockNumber);
-    } catch (err) {
-        console.error("Error minting NFT:", err);
-    }
+export async function mintRareNFT(toAddress) {
+  try {
+    const tx = await contract.mintRarePumpkin(toAddress);
+    const receipt = await tx.wait();
+    return tx.hash;
+  } catch (err) {
+    console.error("Mint error:", err);
+    throw err; // important so API returns proper error
+  }
 }
-
-// Example usage
-mintRareNFT("0xYourTestWalletAddressHere");
