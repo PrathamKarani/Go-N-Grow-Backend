@@ -1,8 +1,7 @@
-import { ethers } from "ethers";
-import fs from "fs";
-import path from "path";
-
-const __dirname = path.resolve();
+require("dotenv").config();
+const { ethers } = require("ethers");
+const fs = require("fs");
+const path = require("path");
 
 // Load ABI safely
 const abi = JSON.parse(
@@ -18,13 +17,15 @@ const contract = new ethers.Contract(
   wallet
 );
 
-export async function mintRareNFT(toAddress) {
+async function mintRareNFT(toAddress) {
   try {
     const tx = await contract.mintRarePumpkin(toAddress);
     const receipt = await tx.wait();
     return tx.hash;
   } catch (err) {
     console.error("Mint error:", err);
-    throw err; // important so API returns proper error
+    throw err;
   }
 }
+
+module.exports = { mintRareNFT };
