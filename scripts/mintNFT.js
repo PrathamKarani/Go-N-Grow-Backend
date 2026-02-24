@@ -5,7 +5,7 @@ const path = require("path");
 
 // Load ABI safely
 const abi = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "abis", "RarePumpkin.json"))
+  fs.readFileSync(path.join(__dirname,"..", "abis", "RarePumpkin.json"))
 ).abi;
 
 const provider = new ethers.JsonRpcProvider(process.env.AMOY_RPC_URL);
